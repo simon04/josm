@@ -43,8 +43,8 @@ with Apache license version 2.0.
 The Bzip2 code is from Apache Commons Compress and licensed
 with Apache license version 2.0.
 
-The signpost code (http://code.google.com/p/oauth-signpost/)
-is from Matthias Käppler and licensed with the Apache License 2.0.
+The ScribeJava code (https://github.com/scribejava/scribejava)
+is licensed with MIT.
 
 The mail/url validator routines use code from Apache Commons
 Validator which is licensed with Apache license version 2.0.

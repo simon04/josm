@@ -54,7 +54,7 @@
         <Class name="~javax.json.*" />
     </Match>
     <Match>
-        <Class name="~oauth.signpost.*" />
+        <Class name="~com.github.scribejava.*" />
     </Match>
     <Match>
         <Class name="~org.apache.*" />

@@ -813,8 +813,6 @@ public class MainApplication {
         }
 
         if (Logging.isLoggingEnabled(Logging.LEVEL_TRACE)) {
-            // Enable debug in OAuth signpost via system preference, but only at trace level
-            Utils.updateSystemProperty("debug", "true");
             Logging.info(tr("Enabled detailed debug level (trace)"));
         }
 

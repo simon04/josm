@@ -30,7 +30,7 @@
         <dependency conf="api->default" org="com.adobe.xmp" name="xmpcore" rev="6.1.10"/>
         <dependency conf="api->default" org="com.drewnoakes" name="metadata-extractor" rev="2.15.0" transitive="false"/>
         <dependency conf="api->default" org="ch.poole" name="OpeningHoursParser" rev="0.23.2"/>
-        <dependency conf="api->default" org="oauth.signpost" name="signpost-core" rev="2.0.0"/>
+        <dependency conf="api->default" org="com.github.scribejava" name="scribejava-core" rev="8.3.1"/>
         <dependency conf="api->default" org="org.webjars.npm" name="tag2link" rev="2021.3.21"/>
         <!-- sources->sources -->
         <dependency conf="sources->sources" org="org.openstreetmap.jmapviewer" name="jmapviewer" rev="2.15"/>
@@ -43,7 +43,7 @@
         <dependency conf="sources->sources" org="com.adobe.xmp" name="xmpcore" rev="6.1.10"/>
         <dependency conf="sources->sources" org="com.drewnoakes" name="metadata-extractor" rev="2.15.0" transitive="false"/>
         <dependency conf="sources->sources" org="ch.poole" name="OpeningHoursParser" rev="0.23.2"/>
-        <dependency conf="sources->sources" org="oauth.signpost" name="signpost-core" rev="2.0.0"/>
+        <dependency conf="sources->sources" org="com.github.scribejava" name="scribejava-core" rev="8.3.1"/>
         <dependency conf="sources->default" org="org.webjars.npm" name="tag2link" rev="2021.3.21"/><!-- sources->default sic! (tag2link-sources.jar is empty, see #19335) -->
         <!-- commonslang->default -->
         <dependency conf="commonslang->default" org="org.apache.commons" name="commons-lang3" rev="3.11"/>

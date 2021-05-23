@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,19 +31,12 @@ import org.openstreetmap.josm.tools.HttpClient;
 import org.openstreetmap.josm.tools.Logging;
 import org.openstreetmap.josm.tools.Utils;
 
-import oauth.signpost.OAuth;
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.OAuthProvider;
-import oauth.signpost.exception.OAuthException;
-
 /**
  * An OAuth 1.0 authorization client.
  * @since 2746
  */
 public class OsmOAuthAuthorizationClient {
     private final OAuthParameters oauthProviderParameters;
-    private final OAuthConsumer consumer;
-    private final OAuthProvider provider;
     private boolean canceled;
     private HttpClient connection;
 
@@ -61,25 +55,6 @@ public class OsmOAuthAuthorizationClient {
     public OsmOAuthAuthorizationClient(OAuthParameters parameters) {
         CheckParameterUtil.ensureParameterNotNull(parameters, "parameters");
         oauthProviderParameters = new OAuthParameters(parameters);
-        consumer = oauthProviderParameters.buildConsumer();
-        provider = oauthProviderParameters.buildProvider(consumer);
-    }
-
-    /**
-     * Creates a new authorisation client with the parameters <code>parameters</code>
-     * and an already known Request Token.
-     *
-     * @param parameters the OAuth parameters. Must not be null.
-     * @param requestToken the request token. Must not be null.
-     * @throws IllegalArgumentException if parameters is null
-     * @throws IllegalArgumentException if requestToken is null
-     */
-    public OsmOAuthAuthorizationClient(OAuthParameters parameters, OAuthToken requestToken) {
-        CheckParameterUtil.ensureParameterNotNull(parameters, "parameters");
-        oauthProviderParameters = new OAuthParameters(parameters);
-        consumer = oauthProviderParameters.buildConsumer();
-        provider = oauthProviderParameters.buildProvider(consumer);
-        consumer.setTokenWithSecret(requestToken.getKey(), requestToken.getSecret());
     }
 
     /**
@@ -110,9 +85,8 @@ public class OsmOAuthAuthorizationClient {
         try {
             monitor.beginTask("");
             monitor.indeterminateSubTask(tr("Retrieving OAuth Request Token from ''{0}''", oauthProviderParameters.getRequestTokenUrl()));
-            provider.retrieveRequestToken(consumer, "");
-            return OAuthToken.createToken(consumer);
-        } catch (OAuthException e) {
+            return oauthProviderParameters.buildService().getRequestToken();
+        } catch (IOException | ExecutionException | InterruptedException e) {
             if (canceled)
                 throw new OsmTransferCanceledException(e);
             throw new OsmOAuthAuthorizationException(e);
@@ -133,16 +107,16 @@ public class OsmOAuthAuthorizationClient {
      * @throws OsmTransferCanceledException if the user canceled the request
      * @see #getRequestToken(ProgressMonitor)
      */
-    public OAuthToken getAccessToken(ProgressMonitor monitor) throws OsmOAuthAuthorizationException, OsmTransferCanceledException {
+    public OAuthToken getAccessToken(OAuthToken requestToken,
+                                     ProgressMonitor monitor) throws OsmOAuthAuthorizationException, OsmTransferCanceledException {
         if (monitor == null) {
             monitor = NullProgressMonitor.INSTANCE;
         }
         try {
             monitor.beginTask("");
             monitor.indeterminateSubTask(tr("Retrieving OAuth Access Token from ''{0}''", oauthProviderParameters.getAccessTokenUrl()));
-            provider.retrieveAccessToken(consumer, null);
-            return OAuthToken.createToken(consumer);
-        } catch (OAuthException e) {
+            return oauthProviderParameters.buildService().getAccessToken(requestToken);
+        } catch (IOException | ExecutionException | InterruptedException e) {
             if (canceled)
                 throw new OsmTransferCanceledException(e);
             throw new OsmOAuthAuthorizationException(e);
@@ -159,13 +133,10 @@ public class OsmOAuthAuthorizationClient {
      * @return  the authorise URL for this request
      */
     public String getAuthoriseUrl(OAuthToken requestToken) {
-        StringBuilder sb = new StringBuilder(32);
-
         // OSM is an OAuth 1.0 provider and JOSM isn't a web app. We just add the oauth request token to
         // the authorisation request, no callback parameter.
         //
-        sb.append(oauthProviderParameters.getAuthoriseUrl()).append('?'+OAuth.OAUTH_TOKEN+'=').append(requestToken.getKey());
-        return sb.toString();
+        return oauthProviderParameters.getAuthoriseUrl() + "?oauth_token=" + requestToken.getKey();
     }
 
     protected String extractToken() {

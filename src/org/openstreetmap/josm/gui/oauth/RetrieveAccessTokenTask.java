@@ -82,9 +82,9 @@ public class RetrieveAccessTokenTask extends PleaseWaitRunnable {
     protected void realRun() throws SAXException, IOException, OsmTransferException {
         try {
             synchronized (this) {
-                client = new OsmOAuthAuthorizationClient(parameters, requestToken);
+                client = new OsmOAuthAuthorizationClient(parameters);
             }
-            accessToken = client.getAccessToken(getProgressMonitor().createSubTaskMonitor(0, false));
+            accessToken = client.getAccessToken(requestToken, getProgressMonitor().createSubTaskMonitor(0, false));
         } catch (OsmTransferCanceledException e) {
             Logging.trace(e);
         } catch (final OsmOAuthAuthorizationException e) {

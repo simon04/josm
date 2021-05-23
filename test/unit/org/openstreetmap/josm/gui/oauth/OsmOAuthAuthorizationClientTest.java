@@ -3,6 +3,7 @@ package org.openstreetmap.josm.gui.oauth;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.assertEquals;
@@ -51,25 +52,26 @@ public class OsmOAuthAuthorizationClientTest {
     @Test
     public void testOsmOAuthAuthorizationClient() throws OsmTransferCanceledException, OsmOAuthAuthorizationException {
         // request token
-        wireMockRule.stubFor(get(urlEqualTo("/oauth/request_token"))
+        wireMockRule.stubFor(post(urlEqualTo("/oauth/request_token"))
                 .willReturn(aResponse().withStatus(200).withBody(String.join("&",
                         "oauth_token=entxUGuwRKV6KyVDF0OWScdGhbqXGMGmosXuiChR",
                         "oauth_token_secret=nsBD2Hr5lLGDUeNoh3SnLaGsUV1TiPYM4qUr7tPB"))));
         OsmOAuthAuthorizationClient client = new OsmOAuthAuthorizationClient(OAuthParameters.createDefault(wireMockRule.url("/api")));
 
         OAuthToken requestToken = client.getRequestToken(null);
+        assertNotNull(requestToken);
         assertEquals("requestToken.key", "entxUGuwRKV6KyVDF0OWScdGhbqXGMGmosXuiChR", requestToken.getKey());
         assertEquals("requestToken.secret", "nsBD2Hr5lLGDUeNoh3SnLaGsUV1TiPYM4qUr7tPB", requestToken.getSecret());
         String url = client.getAuthoriseUrl(requestToken);
         assertEquals("url", wireMockRule.url("/oauth/authorize?oauth_token=entxUGuwRKV6KyVDF0OWScdGhbqXGMGmosXuiChR"), url);
 
         // access token
-        wireMockRule.stubFor(get(urlEqualTo("/oauth/access_token"))
+        wireMockRule.stubFor(post(urlEqualTo("/oauth/access_token"))
                 .willReturn(aResponse().withStatus(200).withBody(String.join("&",
                         "oauth_token=eGMGmosXuiChRntxUGuwRKV6KyVDF0OWScdGhbqX",
                         "oauth_token_secret=nsBUeNor7tPh3SHr5lLaGsGDUD2PYMV1TinL4qUB"))));
 
-        OAuthToken accessToken = client.getAccessToken(null);
+        OAuthToken accessToken = client.getAccessToken(requestToken, null);
         assertEquals("accessToken.key", "eGMGmosXuiChRntxUGuwRKV6KyVDF0OWScdGhbqX", accessToken.getKey());
         assertEquals("accessToken.secret", "nsBUeNor7tPh3SHr5lLaGsGDUD2PYMV1TinL4qUB", accessToken.getSecret());
     }

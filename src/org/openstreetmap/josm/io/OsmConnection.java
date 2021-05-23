@@ -20,9 +20,6 @@ import org.openstreetmap.josm.tools.HttpClient;
 import org.openstreetmap.josm.tools.JosmRuntimeException;
 import org.openstreetmap.josm.tools.Logging;
 
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.exception.OAuthException;
-
 /**
  * Base class that handles common things like authentication for the reader and writer
  * to the osm server.
@@ -140,7 +137,6 @@ public class OsmConnection {
         if (oauthParameters == null) {
             oauthParameters = OAuthParameters.createFromApiUrl(OsmApi.getOsmApi().getServerUrl());
         }
-        OAuthConsumer consumer = oauthParameters.buildConsumer();
         OAuthAccessTokenHolder holder = OAuthAccessTokenHolder.getInstance();
         if (!holder.containsAccessToken()) {
             obtainAccessToken(connection);
@@ -148,10 +144,9 @@ public class OsmConnection {
         if (!holder.containsAccessToken()) { // check if wizard completed
             throw new MissingOAuthAccessTokenException();
         }
-        consumer.setTokenWithSecret(holder.getAccessTokenKey(), holder.getAccessTokenSecret());
         try {
-            consumer.sign(connection);
-        } catch (OAuthException e) {
+            oauthParameters.buildService().signRequest(holder.getAccessToken(), connection);
+        } catch (RuntimeException e) {
             throw new OsmTransferException(tr("Failed to sign a HTTP connection with an OAuth Authentication header"), e);
         }
     }

@@ -175,8 +175,8 @@ There are some third party libraries which are directly included in the source c
     -> https://github.com/blackears/svgSalamander
 * Metadata Extractor: Read EXIF Metadata of photos
     -> https://github.com/drewnoakes/metadata-extractor
-* Signpost: OAuth library
-    -> https://github.com/mttkay/signpost
+* ScribeJava: OAuth library
+    -> https://github.com/scribejava/scribejava
 * MultiSplitPane: Small lib for GUI layout management
     src/org/openstreetmap/josm/gui/MultiSplitLayout.java, MultiSplitPane.java
     -> https://github.com/floscher/multi-split

@@ -495,7 +495,7 @@ public class FullyAutomaticAuthorizationUI extends AbstractAuthorizationUI {
                 );
                 getProgressMonitor().worked(1);
                 if (canceled) return;
-                final OAuthToken accessToken = authClient.getAccessToken(
+                final OAuthToken accessToken = authClient.getAccessToken(requestToken,
                         getProgressMonitor().createSubTaskMonitor(1, false)
                 );
                 getProgressMonitor().worked(1);

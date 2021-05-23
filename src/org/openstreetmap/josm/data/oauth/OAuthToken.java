@@ -3,24 +3,13 @@ package org.openstreetmap.josm.data.oauth;
 
 import java.util.Objects;
 
+import com.github.scribejava.core.model.OAuth1Token;
 import org.openstreetmap.josm.tools.CheckParameterUtil;
-
-import oauth.signpost.OAuthConsumer;
 
 /**
  * An oauth token that has been obtained by JOSM and can be used to authenticate the user on the server.
  */
 public class OAuthToken {
-
-    /**
-     * Creates an OAuthToken from the token currently managed by the {@link OAuthConsumer}.
-     *
-     * @param consumer the consumer
-     * @return the token
-     */
-    public static OAuthToken createToken(OAuthConsumer consumer) {
-        return new OAuthToken(consumer.getToken(), consumer.getTokenSecret());
-    }
 
     private final String key;
     private final String secret;
@@ -46,6 +35,12 @@ public class OAuthToken {
         CheckParameterUtil.ensureParameterNotNull(other, "other");
         this.key = other.key;
         this.secret = other.secret;
+    }
+
+    public OAuthToken(OAuth1Token token) {
+        CheckParameterUtil.ensureParameterNotNull(token, "token");
+        this.key = token.getToken();
+        this.secret = token.getTokenSecret();
     }
 
     /**

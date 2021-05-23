@@ -8,9 +8,6 @@ import org.openstreetmap.josm.spi.preferences.IUrls;
 import org.openstreetmap.josm.tools.CheckParameterUtil;
 import org.openstreetmap.josm.tools.Utils;
 
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.OAuthProvider;
-
 /**
  * This class manages an immutable set of OAuth parameters.
  * @since 2747
@@ -211,28 +208,12 @@ public class OAuthParameters {
     }
 
     /**
-     * Builds an {@link OAuthConsumer} based on these parameters.
+     * Builds an {@link OAuthService} based on this parameters.
      *
-     * @return the consumer
+     * @return the service
      */
-    public OAuthConsumer buildConsumer() {
-        return new SignpostAdapters.OAuthConsumer(consumerKey, consumerSecret);
-    }
-
-    /**
-     * Builds an {@link OAuthProvider} based on these parameters and a OAuth consumer <code>consumer</code>.
-     *
-     * @param consumer the consumer. Must not be null.
-     * @return the provider
-     * @throws IllegalArgumentException if consumer is null
-     */
-    public OAuthProvider buildProvider(OAuthConsumer consumer) {
-        CheckParameterUtil.ensureParameterNotNull(consumer, "consumer");
-        return new SignpostAdapters.OAuthProvider(
-                requestTokenUrl,
-                accessTokenUrl,
-                authoriseUrl
-        );
+    public OAuthService buildService() {
+        return new OAuthService(this);
     }
 
     @Override
@@ -253,4 +234,5 @@ public class OAuthParameters {
     public int hashCode() {
         return Objects.hash(consumerKey, consumerSecret, requestTokenUrl, accessTokenUrl, authoriseUrl, osmLoginUrl, osmLogoutUrl);
     }
+
 }

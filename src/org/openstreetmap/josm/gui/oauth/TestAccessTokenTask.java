@@ -30,9 +30,6 @@ import org.openstreetmap.josm.tools.XmlUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.exception.OAuthException;
-
 /**
  * Checks whether an OSM API server can be accessed with a specific Access Token.
  *
@@ -82,10 +79,8 @@ public class TestAccessTokenTask extends PleaseWaitRunnable {
         // Do nothing
     }
 
-    protected void sign(HttpClient con) throws OAuthException {
-        OAuthConsumer consumer = oauthParameters.buildConsumer();
-        consumer.setTokenWithSecret(token.getKey(), token.getSecret());
-        consumer.sign(con);
+    protected void sign(HttpClient con) {
+        oauthParameters.buildService().signRequest(token, con);
     }
 
     protected String normalizeApiUrl(String url) {
@@ -130,8 +125,6 @@ public class TestAccessTokenTask extends PleaseWaitRunnable {
             throw new XmlParsingException(e);
         } catch (IOException e) {
             throw new OsmTransferException(e);
-        } catch (OAuthException e) {
-            throw new OsmOAuthAuthorizationException(e);
         } finally {
             DefaultAuthenticator.getInstance().setEnabled(authenticatorEnabled);
         }
